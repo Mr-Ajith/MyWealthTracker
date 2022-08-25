@@ -1,1 +1,2 @@
 web: gunicorn MyWealthTracker.wsgi
+heroku ps:scale web=1
