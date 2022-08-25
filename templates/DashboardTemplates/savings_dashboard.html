@@ -1,0 +1,175 @@
+{% extends "dashboard_main.html" %}
+{% load static %}
+{% block content %}
+
+<!-- Begin Page Content -->
+<div class="container-fluid">
+
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Savings Dashboard</h1>
+        <a href="" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
+            class="fas fa-rotate fa-sm text-white-50"></i> Refresh </a>
+    </div>
+
+    <!-- Content Row -->
+    <div class="row">
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Canara Bank</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800"> <i
+                                    class="fas fa-indian-rupee-sign "></i>&nbsp;{{ savingsDashboardValues.can }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-coins fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                               Central Bank Of India</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                <i class="fas fa-indian-rupee-sign "></i>&nbsp;{{ savingsDashboardValues.cbi }}
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-coins fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                South Indian Bank</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800"> <i
+                                    class="fas fa-indian-rupee-sign "></i>&nbsp;{{ savingsDashboardValues.sib }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-coins fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+        <!-- Content Row -->
+     
+    <div class="row">
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow mb-4">
+                <!-- Card Header - Dropdown -->
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Total Savings </h6>
+                    <h5 class="font-weight-bold text-gray-1000" style="color: black;">
+                        <i class="fas fa-indian-rupee-sign "></i>&nbsp;{{ savingsDashboardValues.total }}
+                    </h5>
+                </div>
+                <!-- Card Body -->
+                <div class="card-body">
+                    <canvas id="myChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+   <!-- /.container-fluid -->
+<script>
+    var endpoint = '/getchartdata';
+    $.ajax({
+        method: "GET",
+        url: endpoint,
+        data: {
+            'menuId': '1'
+        },
+        success: function (data) {
+            drawChart(data, 'myChart');
+        },
+        error: function (error_data) {
+            console.log(error_data);
+        }
+    })
+
+    function drawChart(data, id) {
+        var labels = data.labels;
+        var chartLabel = data.chartLabel;
+        var chartdata = data.chartdata;
+        var ctx = document.getElementById(id).getContext('2d');
+        var myChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: chartLabel,
+                    data: chartdata,
+                    backgroundColor: [
+                        '#1cc88a',
+                        '#4e73df',
+                        '#f6c23e',
+                    ],
+                }]
+            },
+            options: {
+                legend: {
+                    display: false,
+                },
+                cutoutPercentage: 50,
+                scales: {
+                    xAxes: [{
+                        gridLines: {
+                            display: false
+                        },
+                        ticks: {
+                            display: false,
+                            beginAtZero: true
+                        }
+                    }],
+                    yAxes: [{
+                        gridLines: {
+                            display: false
+                        },
+                        ticks: {
+                            display: false,
+                            beginAtZero: true
+                        }
+                    }]
+                },
+                tooltips: {
+                    callbacks: {
+                        label: function (tooltipItem, data) {
+                            var dataset = data.datasets[tooltipItem.datasetIndex];
+                            var meta = dataset._meta[Object.keys(dataset._meta)[0]];
+                            var total = meta.total;
+                            var currentValue = dataset.data[tooltipItem.index];
+                            var percentage = parseFloat((currentValue / total * 100).toFixed(2));
+                            return   percentage + '%';
+                        },
+                        title: function (tooltipItem, data) {
+                            return data.labels[tooltipItem[0].index];
+                        }
+
+                    }
+                }
+            }
+        });
+    }
+</script>
+
+
+{% endblock %}
