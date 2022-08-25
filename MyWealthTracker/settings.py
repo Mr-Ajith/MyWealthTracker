@@ -26,7 +26,8 @@ SECRET_KEY = 'django-insecure-tiq61x_i7zbsn$g3plpvtzdsy8tj9qn%7t$)a(ex*2sd3yeyyb
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1', 'mywealthtracker.herokuapp.com']
+
 
 
 # Application definition
